@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Signup</title>
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@uiverse/uiverse.min.css"> 
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h2>Start your journey</h2>
+            <form id="signupForm">
+                <input type="text" id="name" placeholder="Full name">
+                <input type="email" id="email" placeholder="Email">
+                <input type="password" id="password" placeholder="Password">
+                <input type="number" id="age" placeholder="Age">
+
+                <!-- Gender Selection -->
+                <div class="radio-group">
+                    <label class="group-title">Gender:</label>
+                    <div class="radio-options">
+                        <label><input type="radio" name="gender" value="Male" checked> Male</label>
+                        <label><input type="radio" name="gender" value="Female"> Female</label>
+                        <label><input type="radio" name="gender" value="Other"> Other</label>
+                    </div>
+                </div>
+
+                <!-- Food Preference Selection -->
+                <div class="radio-group">
+                    <label class="group-title">Food Preference:</label>
+                    <div class="radio-options">
+                        <label><input type="radio" name="food" value="Veg" checked> Veg</label>
+                        <label><input type="radio" name="food" value="Non-Veg">Non-Veg</label>
+                        <label><input type="radio" name="food" value="Jain"> Jain </label>
+                        <label><input type="radio" name="food" value="Vegan"> Vegan </label>
+                        <label><input type="radio" name="food" value="None"> None </label>
+                    </div>
+                </div>
+
+                <button type="submit">Start</button>
+            </form>
+
+            <script>
+                document.getElementById("signupForm").addEventListener("submit", async function(e) {
+                    e.preventDefault();
+                    
+                    const name = document.getElementById("name").value;
+                    const email = document.getElementById("email").value;
+                    const password = document.getElementById("password").value;
+                    const age = document.getElementById("age").value;
+                    const gender = document.querySelector('input[name="gender"]:checked').value;
+                    const food = document.querySelector('input[name="food"]:checked').value;
+                
+                    const response = await fetch("http://localhost:5000/auth/signup", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ name, email, password, age, gender, food })
+                    });
+                
+                    const data = await response.json();
+                    if (response.ok) {
+                        window.location.href = "login.html"; 
+                    } else {
+                        alert(data.error || "Signup failed");
+                    }
+                });
+            </script>
+
+            <p class="bottom-text">Already have an account? <a href="login.html">Log in</a></p>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+

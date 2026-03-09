@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Recipes</title>
+  <link rel="stylesheet" href="thingsyoushouldeat.css">
+</head>
+<body>
+
+  <header class="hero">
+    <h1>Discover Recipes</h1>
+    <p>Find recipes based on what you have!</p>
+  </header>
+
+  <div class="container">
+    <div class="left-section">
+      <h2>Find Ingredients</h2>
+      <p>Salt and water are essential staples—we assume you already have them!</p>
+      <div class="search-bar">
+        <input type="text" id="ingredient-search" placeholder="Search ingredients..." onkeyup="filterIngredients()">
+      </div>
+      <div class="ingredient-container" id="ingredient-list"></div>
+      <div class="selected-container">
+        <h3>Selected Ingredients:</h3>
+        <ul id="selected-ingredients"></ul>
+      </div>
+    </div>
+
+    <div class="right-section">
+      <h2>Recipes You Can Make</h2>
+      <div id="recipe-list">Select ingredients to see matching recipes.</div>
+    </div>
+  </div>
+
+  <script>
+    let selectedIngredients = [];
+
+    function addIngredient(ingredient) {
+      if (!selectedIngredients.includes(ingredient)) {
+        selectedIngredients.push(ingredient);
+        updateSelectedIngredients();
+        fetchRecipes();
+      }
+    }
+
+    function updateSelectedIngredients() {
+      const selectedList = document.getElementById('selected-ingredients');
+      selectedList.innerHTML = "";
+      selectedIngredients.forEach(ingredient => {
+        let listItem = document.createElement('li');
+        listItem.textContent = ingredient;
+        listItem.onclick = () => removeIngredient(ingredient);
+        selectedList.appendChild(listItem);
+      });
+    }
+
+    function removeIngredient(ingredient) {
+      selectedIngredients = selectedIngredients.filter(item => item !== ingredient);
+      updateSelectedIngredients();
+      fetchRecipes();
+    }
+
+    async function fetchRecipes() {
+      if (!Array.isArray(selectedIngredients) || selectedIngredients.length === 0) {
+        document.getElementById("recipe-list").innerHTML = "Select ingredients to see matching recipes.";
+        return;
+      }
+    
+      try {
+        const response = await fetch("http://localhost:5000/recommend", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ingredients: selectedIngredients }),
+        });
+    
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+    
+        const data = await response.json();
+    
+        if (!Array.isArray(data.recipes) || data.recipes.length === 0) {
+          document.getElementById("recipe-list").innerHTML = "No recipes found for the selected ingredients.";
+          return;
+        }
+    
+        displayRecipes(data.recipes);
+      } catch (error) {
+        console.error("Error fetching recipes:", error);
+        document.getElementById("recipe-list").innerHTML = "Failed to load recipes.";
+      }
+    }        
+    
+    function displayRecipes(recipes) {
+      const recipeList = document.getElementById("recipe-list");
+      recipeList.innerHTML = ""; // Clear old content
+    
+      recipes.forEach(recipe => {
+        const recipeItem = document.createElement("a");
+        recipeItem.addEventListener("click", () => {
+          window.location.href = `recipes4user.html?recipeId=${recipe._id}`;
+      });
+            
+        recipeItem.classList.add("recipe-item");
+        const imageUrl = recipe["Img URL"] ? recipe["Img URL"] : "default-image.jpg"; // Fallback if missing
+
+recipeItem.innerHTML = `
+    <div class="recipe-content">
+        <div class="recipe-info">
+            <h3>${recipe["Recipe Name"]}</h3>
+            <p><strong>Cuisine:</strong> ${recipe.Cusine}</p>
+            <p><strong>Dish Type:</strong> ${recipe["Dish Type"]}</p>
+            <p><strong>Prep Time:</strong> ${recipe["Preparation Time"]}</p>
+            <p><strong>Cook Time:</strong> ${recipe["Cooking Time"]}</p>
+            <p><strong>Matched:</strong> ${recipe.matches}</p>
+        </div>
+        <img src="${imageUrl}" alt="${recipe["Recipe Name"]}" class="recipe-image">
+    </div>
+`;
+        recipeList.appendChild(recipeItem);
+      });
+    }
+         
+    
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchIngredients();
+    });
+    
+    function fetchIngredients() {
+      fetch("http://localhost:5000/ingredients")  // API call
+        .then(response => response.json())
+        .then(data => {
+          displayIngredients(data.ingredients);
+        })
+        .catch(error => console.error("Error fetching ingredients:", error));
+    }
+    
+    function displayIngredients(ingredients) {
+      const container = document.getElementById("ingredient-list");
+      container.innerHTML = ""; // Clear previous content
+    
+      ingredients.forEach(ingredient => {
+        let button = document.createElement("button");
+        button.textContent = ingredient;
+        button.classList.add("ingredient-btn");  
+        button.onclick = () => addIngredient(ingredient);  // Attach event
+        container.appendChild(button);
+      });
+    }
+    
+    function filterIngredients() {
+      const searchValue = document.getElementById("ingredient-search").value.toLowerCase();
+      const buttons = document.querySelectorAll(".ingredient-btn");
+      
+      buttons.forEach(button => {
+        if (button.textContent.toLowerCase().includes(searchValue)) {
+          button.style.display = "block";
+        } else {
+          button.style.display = "none";
+        }
+      });
+    }
+
+
+    
+  </script>
+
+</body>
+</html>

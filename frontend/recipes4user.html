@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Details</title>
+    <link rel="stylesheet" href="recipes4user.css">
+    <script>
+        async function fetchRecipeDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const recipeId = urlParams.get("recipeId");
+    
+            if (!recipeId) {
+                document.body.innerHTML = "<h2>Recipe not found!</h2>";
+                return;
+            }
+    
+            try {
+                const response = await fetch(`http://localhost:5000/recipe/${recipeId}`); // Fetch details
+                const recipe = await response.json();
+    
+                document.getElementById("recipe-title").textContent = recipe["Recipe Name"];
+                document.getElementById("recipe-cuisine").textContent = recipe.Cusine;
+                document.getElementById("recipe-dish-type").textContent = recipe["Dish Type"];
+                document.getElementById("recipe-prep-time").textContent = recipe["Preparation Time"];
+                document.getElementById("recipe-cook-time").textContent = recipe["Cooking Time"];
+                document.getElementById("recipe-image").src = recipe["Img URL"];
+    
+                // Ingredients List
+                const ingredientsList = document.getElementById("ingredients-list");
+                ingredientsList.innerHTML = "";
+                recipe.INGREDIENTS.split(", ").forEach(ingredient => {
+                    const li = document.createElement("li");
+                    li.textContent = ingredient;
+                    ingredientsList.appendChild(li);
+                });
+    
+                // Preparation Steps
+                const preparationStepsList = document.getElementById("preparation-steps-list");
+                preparationStepsList.innerHTML = "";
+                recipe["Preparation Steps"].split(/\d+\.\s/).filter(step => step).forEach((step) => {
+                    const li = document.createElement("li");
+                    li.textContent = step.trim();  // Avoid adding extra numbering
+                    preparationStepsList.appendChild(li);
+                });
+                
+                
+    
+                // Cooking Steps
+                const cookingStepsList = document.getElementById("cooking-steps-list");
+                cookingStepsList.innerHTML = "";
+                recipe["Cooking Steps"].split(/\d+\.\s/).filter(step => step).forEach((step) => {
+                    const li = document.createElement("li");
+                    li.textContent = step.trim();  // Avoid adding extra numbering
+                    cookingStepsList.appendChild(li);
+                });
+                
+                
+    
+            } catch (error) {
+                console.error("Error fetching recipe details:", error);
+            }
+        }
+    
+        function goBack() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const fromPage = urlParams.get("from");
+        
+            if (fromPage) {
+                window.location.href = fromPage; // Go back to the referring page
+            } else {
+                window.location.href = "recipes.html"; // Default fallback
+            }
+        }                
+    
+        document.addEventListener("DOMContentLoaded", fetchRecipeDetails);
+    </script>    
+</head>
+<body>
+    <div class="container">
+        <!-- Back Button (Toggle Style) -->
+        <label class="back-btn" onclick="goBack()">
+            <input type="checkbox" value="" class="sr-only peer">
+            <div class="peer ring-0 bg-rose-400 rounded-full outline-none duration-300 after:duration-500 w-12 h-12 shadow-md peer-checked:bg-emerald-500 peer-focus:outline-none  
+                 after:content-['✖️'] after:rounded-full after:absolute after:outline-none after:h-10 after:w-10 after:bg-gray-50 after:top-1 after:left-1 after:flex after:justify-center after:items-center  
+                 peer-hover:after:scale-75 peer-checked:after:content-['✔️'] after:-rotate-180 peer-checked:after:rotate-0">
+            </div>
+        </label>
+
+        <div class="recipe-layout">
+            <!-- Left Section: Recipe Image -->
+            <div class="left-section">
+                <img src="" alt="Recipe Image" id="recipe-image" class="recipe-img">
+            </div>
+
+            <!-- Right Section: Recipe Details -->
+            <div class="right-section">
+                <h1 id="recipe-title">Loading...</h1>
+                <p><strong>Cuisine:</strong> <span id="recipe-cuisine"></span></p>
+                <p><strong>Dish Type:</strong> <span id="recipe-dish-type"></span></p>
+                <p><strong>Preparation Time:</strong> <span id="recipe-prep-time"></span></p>
+                <p><strong>Cooking Time:</strong> <span id="recipe-cook-time"></span></p>
+
+                <h2>Ingredients</h2>
+                <ul id="ingredients-list"></ul>
+
+                <h2>Preparation Steps</h2>
+                <ol id="preparation-steps-list"></ol>
+
+                <h2>Cooking Steps</h2>
+                <ol id="cooking-steps-list"></ol>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

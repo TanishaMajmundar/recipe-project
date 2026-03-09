@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Find recipes based on the ingredients you have! Explore delicious dishes and cooking ideas.">
+  <meta name="keywords" content="recipes, cooking, food, dishes, kitchen, ingredients">
+  <meta name="author" content="Recipe Finder">
+  <title>Ingredient-Based Recipe Finder</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  
+  <header class="hero">
+    <div class="overlay">
+      <div class="profile-btn">
+        <!-- Profile Button -->
+  <a href="signup.html" class="profile-btn">
+    <img src="https://images.unsplash.com/photo-1529665253569-6d01c0eaf7b6?q=80&w=1985&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Profile">
+  </a>
+
+      </div>
+      <h1>DISHCOVERY</h1>
+      <p>Let's cook</p>
+      <p>Discover recipes based on the ingredients you have!</p>
+      <div class="nav-container">
+        <div class="nav-left">
+          <a href="" class="uiverse-btn">Home</a>
+          <a href="recipes.html" class="uiverse-btn">Recipes</a>
+          <a href="contact.html" class="uiverse-btn">Contact Us</a>
+        </div>
+        <div class="nav-right">
+          <a href="liked-recipes.html" class="uiverse-btn heart-btn">
+            ❤️ <span>Liked Recipes</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+
+
+  <section class="search-section">
+    <h2>Search Your Recipes</h2>
+    <div class="search-bar">
+      
+      <button class="uiverse-btn" onclick="window.location.href='thingsyoushouldeat.html'">ADD INGREDIENTS</button>
+
+    </div>
+  </section>
+  
+  <section id="recipes-container" class="recipe-grid"></section>
+  <script src="loadRecipes.js"></script>
+
+
+  <section class="recipe-section">
+    <h2>This Month's Featured Dishes</h2>
+    <div class="recipe-grid">
+      <div class="recipe-card">
+        <a href="recipes4user1p.html">
+        <img src="https://images.unsplash.com/photo-1673442635965-34f1b36d8944?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Dish 1">
+        </a>
+        <h3>Spaghetti Carbonara</h3>
+      </div>
+      <div class="recipe-card">
+        <a href="recipes4userp2.html">
+        <img src="https://images.unsplash.com/photo-1546793665-c74683f339c1?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Dish 2">
+      </a>
+        <h3>Fresh Garden Salad</h3>
+      </div>
+      <div class="recipe-card">
+        <a href="recipes4userp2.html">
+        <img src="https://images.unsplash.com/photo-1629978448078-c94a0ab6500f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Dish 3">
+      </a>
+        <h3>Tomato Basil Soup</h3>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2025 Recipe Finder. All rights reserved.</p>
+  </footer>
+</body>
+</html>

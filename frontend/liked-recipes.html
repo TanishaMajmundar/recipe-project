@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liked Recipes</title>
+    <link rel="stylesheet" href="liked-recipes.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", fetchLikedRecipes);
+    
+        async function fetchLikedRecipes() {
+            try {
+                const userId = "test_user"; // Replace this with dynamic user ID if needed
+                // Changed from /liked-recipes to /api/likedRecipes/:userId
+                const response = await fetch(`http://localhost:5000/api/likedRecipes/${userId}`);
+                const likedRecipes = await response.json();
+                displayLikedRecipes(likedRecipes);
+            } catch (error) {
+                console.error("Failed to fetch liked recipes:", error);
+            }
+        }
+    
+        function displayLikedRecipes(recipes) {
+            const likedRecipesContainer = document.getElementById("liked-recipes-container");
+            likedRecipesContainer.innerHTML = "";
+        
+            if (recipes.length === 0) {
+                likedRecipesContainer.innerHTML = "<p class='no-likes'>No liked recipes yet!</p>";
+                return;
+            }
+        
+            recipes.forEach(recipe => {
+                const card = document.createElement("div");
+                card.classList.add("recipe-card");
+                // Access nested recipe data through recipeId property
+                card.innerHTML = `
+                    <img src="${recipe.recipeId["Img URL"]}" alt="${recipe.recipeId["Recipe Name"]}" class="recipe-img">
+                    <h3>${recipe.recipeId["Recipe Name"]}</h3>
+                    <button class="uiverse-remove-btn" onclick="removeFromLiked('${recipe.recipeId._id}')">❌ Remove</button>
+                `;
+                likedRecipesContainer.appendChild(card);
+            });
+        }
+    
+        async function removeFromLiked(recipeName) {
+            const userId = "test_user"; // Replace with dynamic user ID if needed
+        
+            try {
+                // Changed from /liked-recipes to /api/likedRecipes/:userId/:recipeId
+                const response = await fetch(`http://localhost:5000/api/likedRecipes/${userId}/${recipeName}`, {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" }
+                });
+        
+                if (response.ok) {
+                    alert("Recipe Removed!");
+                    fetchLikedRecipes(); // Refresh the list
+                } else {
+                    alert("Error removing recipe.");
+                }
+            } catch (error) {
+                console.error("Error removing liked recipe:", error);
+            }
+        }        
+    </script>    
+</head>
+<body>
+
+<header class="hero">
+    <div class="overlay">
+        <h1>Liked Recipes</h1>
+        <p>Your favorite recipes in one place!</p>
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="Untitled-1.html" class="uiverse-btn">Home</a>
+                <a href="recipes.html" class="uiverse-btn">Recipes</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="recipe-section">
+    <h2>Your Liked Recipes</h2>
+    <div class="liked-recipes-wrapper">
+        <div id="liked-recipes-container" class="liked-recipes-grid"></div>
+    </div>
+</section>
+
+<footer class="footer">
+    <p>© 2025 Recipe Finder. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+/* Global Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center/cover;
+}
+
+/* Main Container */
+.container {
+    width: 400px;
+    background: rgba(0, 0, 0, 0.467); /* Semi-transparent overlay */
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 10px 0;
+    color: white;
+    font-size: 14px;
+}
+
+.group-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.radio-options {
+    display: flex;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px;
+    border-radius: 8px;
+    width: 100%;
+    justify-content: left;
+}
+
+.radio-options label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+/* Login Box */
+.login-box h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+}
+
+form input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    font-size: 14px;
+    color: white;
+    outline: none;
+}
+
+form input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #388e3c;
+}
+
+/* Bottom Text */
+.bottom-text {
+    margin-top: 10px;
+    font-size: 14px;
+    color: white;
+}
+
+.bottom-text a {
+    color: #4caf50;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+  

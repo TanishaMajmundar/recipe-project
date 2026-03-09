@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Analytics Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="user-info">
+                <div id="logged-in-user" class="logged-user">
+                    <strong>Loading your info...</strong>
+                </div>                
+                <div class="stats">
+                    <div class="stat-item">
+                        <span>Total Users</span>
+                        <h3 id="total-users">Loading...</h3>
+                    </div>
+                    <div class="stat-item">
+                        <span>Total Recipes</span>
+                        <h3 id="total-recipes">Loading...</h3>
+                    </div>
+                    <!-- Updated Logout Button -->
+                    <div class="logout-button" onclick="logout()">
+                        <h3>Log Out</h3>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1>Recipe Analytics Dashboard</h1>
+                <a href="Untitled-1.html" class="home-button">Home</a>
+            </header>
+
+            <!-- Chart Grid -->
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <h2>Recipes by Dish Type</h2>
+                    <img src="charts/recipes_by_dish_type.png" alt="Recipes by Dish Type Chart">
+                </div>
+
+                <div class="chart-card">
+                    <h2>Average Total Time</h2>
+                    <img src="charts/avg_total_time_by_dishtype.png" alt="Average Total Time Chart">
+                </div>
+
+                <div class="chart-card">
+                    <h2>Total Time Distribution</h2>
+                    <img src="charts/total_time_distribution.png" alt="Total Time Distribution Chart">
+                </div>
+
+                <div class="chart-card">
+                    <h2>Users by Age Gender</h2>
+                    <img src="charts/users_by_age_gender.png" alt="Users by Age Gender">
+                </div>
+
+                <div class="chart-card">
+                    <h2>Gender Distribution</h2>
+                    <img src="charts/gender_distribution.png" alt="Gender Distribution">
+                </div>
+
+                <div class="chart-card">
+                    <h2>Food Preference</h2>
+                    <img src="charts/food_preference.png" alt="Food Preference">
+                </div>
+
+                <div class="chart-card">
+                    <h2>Age Distribution</h2>
+                    <img src="charts/age_distribution.png" alt="Age Distribution">
+                </div>
+            </div>
+
+            <footer>
+                Generated with real data from your MongoDB database.<br>
+                Made with code, caffeine, and too many matplotlib figures.
+            </footer>
+        </main>
+    </div>
+
+    <!-- Fetch Stats Script -->
+    <script>
+        async function fetchStats() {
+            try {
+                const isLocalFile = location.protocol === "file:";
+                const baseURL = isLocalFile 
+                    ? "http://localhost:5000/api/stats" 
+                    : "/api/stats";
+                const res = await fetch(baseURL);
+                const data = await res.json();
+                
+                document.getElementById('total-users').innerText = data.users;
+                document.getElementById('total-recipes').innerText = data.recipes;
+            } catch (err) {
+                console.error('Failed to load stats', err);
+                document.getElementById('total-users').innerText = "N/A";
+                document.getElementById('total-recipes').innerText = "N/A";
+            }
+        }
+
+        async function fetchLoggedInUser() {
+            const token = localStorage.getItem("token");
+            const el = document.getElementById("logged-in-user");
+        
+            if (!token) {
+                el.innerHTML = "<em>User not logged in</em>";
+                return;
+            }
+        
+            try {
+                const res = await fetch("http://localhost:5000/auth/me", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+        
+                if (!res.ok) throw new Error("User fetch failed");
+        
+                const user = await res.json();
+                el.innerHTML = `
+                    <h3>Welcome, ${user.name} 👋</h3>
+                    <p>Age: ${user.age}</p>
+                    <p>Gender: ${user.gender}</p>
+                    <p>Food Preference: ${user.food}</p>
+                `;
+            } catch (err) {
+                console.error("User info error:", err);
+                el.innerHTML = "<em>Failed to load user info</em>";
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "/login.html";
+        }
+
+        fetchStats();
+        fetchLoggedInUser();
+    </script>
+</body>
+</html>

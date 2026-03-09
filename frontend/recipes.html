@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipes</title>
+    <link rel="stylesheet" href="recipes.css">
+    <script>
+        async function fetchRecipes(searchQuery = "", dishType = "") {
+            try {
+                let apiUrl = "http://localhost:5000/all-recipes"; // Default API URL
+    
+                if (searchQuery) {
+                    apiUrl = `http://localhost:5000/recipes?name=${encodeURIComponent(searchQuery)}`;
+                } else if (dishType) {
+                    apiUrl = `http://localhost:5000/recipes?dishType=${encodeURIComponent(dishType)}`;
+                }
+    
+                const response = await fetch(apiUrl);
+                const recipes = await response.json();
+                displayRecipes(recipes);
+            } catch (error) {
+                console.error("Failed to fetch recipes:", error);
+            }
+        }
+    
+        function filterRecipes() {
+            const dishType = document.getElementById("filter-dropdown").value;
+    
+            let apiUrl = "http://localhost:5000/recipes";
+    
+            if (dishType) {
+                apiUrl += `?dishType=${encodeURIComponent(dishType)}`;
+            }
+    
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => displayRecipes(data))
+                .catch(error => console.error("Error fetching filtered recipes:", error));
+        }
+    
+        function displayRecipes(recipes) {
+            const recipeGrid = document.querySelector(".recipe-grid");
+            recipeGrid.innerHTML = "";
+        
+            recipes.forEach(recipe => {
+                const recipeCard = document.createElement("div");
+                recipeCard.classList.add("recipe-card");
+        
+                // ✅ This ensures the recipe ID is passed correctly
+                recipeCard.onclick = () => window.location.href = `recipes4user.html?recipeId=${recipe._id}`;
+        
+                recipeCard.innerHTML = `
+                    <img src="${recipe["Img URL"]}" alt="${recipe["Recipe Name"]}" class="recipe-img">
+                    <h3>${recipe["Recipe Name"]}</h3>
+                    <button class="uiverse-like-btn" onclick="likeRecipe('${recipe._id}', '${recipe["Recipe Name"]}', '${recipe["Img URL"]}', event)">❤️ Like</button>
+                `;
+        
+                recipeGrid.appendChild(recipeCard);
+            });
+        }
+        
+    
+        function searchRecipes() {
+            const query = document.getElementById("search-bar").value.trim();
+            fetchRecipes(query);
+        }
+    
+        document.addEventListener("DOMContentLoaded", () => fetchRecipes()); // Load all recipes initially
+
+
+        function likeRecipe(recipeId, recipeName, recipeImg, event) {
+            event.stopPropagation(); // Prevent card click from triggering
+        
+            console.log("Recipe ID being sent:", recipeId);
+        
+            if (!recipeId) {
+                alert("Error: Recipe ID is missing!");
+                return;
+            }
+        
+            fetch("http://localhost:5000/api/likedRecipes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    userId: "test_user",  // Changed to match the value used in liked-recipes.html
+                    recipeId: recipeId,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Server response:", data);
+                if (data.error) {
+                    alert("Error: " + data.error);
+                } else {
+                    alert("Recipe liked successfully!");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+        
+        
+    </script>    
+</head>
+<body>
+
+    <header class="hero">
+        <nav class="nav-container">
+            <a href="Untitled-1.html" class="uiverse-btn">Home</a>
+            <a href="recipes.html" class="uiverse-btn active">Recipes</a>
+            <a href="liked-recipes.html" class="uiverse-btn">Liked Recipes</a>
+        </nav>
+        <h1 class="title">Recipes</h1>
+        <p>Select a dish to see the ingredients</p>
+
+        <!-- 🔍 Search Bar with Filter -->
+        <div class="search-container">
+            <input type="text" id="search-bar" placeholder="Search recipes..." onkeyup="searchRecipes()">
+            <select id="filter-dropdown" onchange="filterRecipes()">
+                <option value="">All</option>
+                <option value="Main Course">Main Course</option>
+                <option value="Chicken Dish">Chicken Dish</option>
+                <option value="Mutton Dish">Mutton Dish</option>
+                <option value="Dessert">Dessert</option>                    
+                <option value="Drink">Drink</option>    
+                <option value="Snack">Snack</option>
+                <option value="Breakfast">Breakfast</option>
+                <option value="Vegetable Dish">Vegetable Dish</option>
+                <option value="Legume Dish">Legume Dish</option>
+                <option value="Side Dish">Side Dish</option>
+                <option value="Flatbread">Flatbread</option>
+            </select>
+        </div>
+    </header>
+
+    <main class="content-container">
+        <section class="recipe-section">
+            <h2>Choose a Recipe</h2>
+            <div class="recipe-grid"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 Recipe Finder. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
+ 
