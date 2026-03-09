@@ -28,6 +28,7 @@ app.use("/ingredients", require("./routes/ingredients"));
 app.use("/recommend", require("./routes/recommend"));
 app.use("/api", require("./routes/stats"));
 app.use("/api/likedRecipes", require("./routes/likedRecipes"));
+app.use("/recommend-ai", require("./routes/recommendLocal"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

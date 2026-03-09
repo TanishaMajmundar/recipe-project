@@ -16,7 +16,14 @@ client = pymongo.MongoClient(MONGO_URI)
 db = client["Recipe"]
 collection = db["Full_Recipe"]
 
-recipes = list(collection.find({}, {"_id": 0, "Recipe Name": 1, "INGREDIENTS": 1}))
+recipes = list(collection.find({}, {
+    "_id": 1,
+    "Recipe Name": 1,
+    "INGREDIENTS": 1
+}))
+
+# Create lookup dictionary
+recipe_lookup = {r["Recipe Name"]: r for r in recipes}
 
 # -----------------------------
 # Ignore common ingredients
@@ -68,13 +75,17 @@ user_count = len(user_set)
 # INGREDIENT MATCHING
 # -----------------------------
 match_scores = {}
+match_info = {}
 
 for recipe in recipes:
 
     name = recipe["Recipe Name"]
     recipe_set = set(clean_ingredients(recipe["INGREDIENTS"]))
 
-    match_count = len(user_set & recipe_set)
+    matched = user_set & recipe_set
+    missing = recipe_set - user_set
+
+    match_count = len(matched)
     total = len(recipe_set)
 
     if total == 0:
@@ -82,22 +93,25 @@ for recipe in recipes:
 
     ratio = match_count / total
 
-    # -----------------------------
     # Adaptive filtering
-    # -----------------------------
     if user_count == 1:
         if match_count < 1:
             continue
-
     elif user_count == 2:
         if match_count < 1:
             continue
-
     else:
-        if match_count < 2 or ratio < 0.3:
+        if match_count < 1:
             continue
 
     match_scores[name] = ratio
+
+    match_info[name] = {
+        "match_count": match_count,
+        "total_ingredients": total,
+        "matched_ingredients": list(matched),
+        "missing_ingredients": list(missing)
+    }
 
 # -----------------------------
 # ML SIMILARITY
@@ -133,27 +147,53 @@ top = sorted(final_scores.items(), key=lambda x: x[1], reverse=True)
 
 results = []
 
-# First pass (strong matches)
+# -----------------------------
+# First Pass (Strong Matches)
+# -----------------------------
 for name, score in top:
+
     if score >= 0.25:
+
+        recipe_data = recipe_lookup[name]
+
         results.append({
+            "_id": str(recipe_data["_id"]),
             "name": name,
-            "score": round(score,3)
+            "score": round(score, 3),
+            "match_count": match_info[name]["match_count"],
+            "total_ingredients": match_info[name]["total_ingredients"],
+            "matched_ingredients": match_info[name]["matched_ingredients"],
+            "missing_ingredients": match_info[name]["missing_ingredients"]
         })
+
     if len(results) == 10:
         break
 
-# Second pass if less recipes
+# -----------------------------
+# Second Pass (Fill Remaining)
+# -----------------------------
 if len(results) < 10:
+
     for name, score in top:
+
         if score >= 0.20 and name not in [r["name"] for r in results]:
+
+            recipe_data = recipe_lookup[name]
+
             results.append({
+                "_id": str(recipe_data["_id"]),
                 "name": name,
-                "score": round(score,3)
+                "score": round(score, 3),
+                "match_count": match_info[name]["match_count"],
+                "total_ingredients": match_info[name]["total_ingredients"],
+                "matched_ingredients": match_info[name]["matched_ingredients"],
+                "missing_ingredients": match_info[name]["missing_ingredients"]
             })
+
         if len(results) == 10:
             break
+
 # -----------------------------
-# OUTPUT
+# OUTPUT JSON
 # -----------------------------
 print(json.dumps(results))

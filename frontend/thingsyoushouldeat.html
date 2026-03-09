@@ -68,7 +68,7 @@
       }
     
       try {
-        const response = await fetch("http://localhost:5000/recommend", {
+        const response = await fetch("http://localhost:5000/recommend-ai", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ingredients: selectedIngredients }),
@@ -106,17 +106,27 @@
         const imageUrl = recipe["Img URL"] ? recipe["Img URL"] : "default-image.jpg"; // Fallback if missing
 
 recipeItem.innerHTML = `
-    <div class="recipe-content">
-        <div class="recipe-info">
-            <h3>${recipe["Recipe Name"]}</h3>
-            <p><strong>Cuisine:</strong> ${recipe.Cusine}</p>
-            <p><strong>Dish Type:</strong> ${recipe["Dish Type"]}</p>
-            <p><strong>Prep Time:</strong> ${recipe["Preparation Time"]}</p>
-            <p><strong>Cook Time:</strong> ${recipe["Cooking Time"]}</p>
-            <p><strong>Matched:</strong> ${recipe.matches}</p>
-        </div>
-        <img src="${imageUrl}" alt="${recipe["Recipe Name"]}" class="recipe-image">
-    </div>
+<div class="recipe-content">
+
+  <div class="recipe-info">
+    <h3>${recipe["Recipe Name"]}</h3>
+
+    <p><strong>Cuisine:</strong> ${recipe["Cusine"]}</p>
+    <p><strong>Dish Type:</strong> ${recipe["Dish Type"]}</p>
+    <p><strong>Prep Time:</strong> ${recipe["Preparation Time"]}</p>
+    <p><strong>Cook Time:</strong> ${recipe["Cooking Time"]}</p>
+
+    <p><strong>Matched:</strong> ${recipe.match_count} / ${recipe.total_ingredients}</p>
+
+    <p><strong>You have:</strong> ${recipe.matched_ingredients.join(", ")}</p>
+
+    <p><strong>You need:</strong> ${recipe.missing_ingredients.join(", ")}</p>
+
+  </div>
+
+  <img src="${imageUrl}" alt="${recipe["Recipe Name"]}" class="recipe-image">
+
+</div>
 `;
         recipeList.appendChild(recipeItem);
       });
